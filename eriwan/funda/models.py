@@ -7,16 +7,28 @@ class Person(models.Model):
   name=models.CharField(max_length=500)
   link=models.CharField(max_length=200)
 
+  def __unicode__(self):
+    return name
+
 class Entity(models.Model):
   type=models.CharField(max_length=50)
   name=models.CharField(max_length=100)
 
+  def __unicode__(self):
+    return name
+
 class Alias(models.Model):
   entity=models.ForeignKey(Entity)
   name=models.CharField(max_length=100)
+  
+  def __unicode__(self):
+    return "%s -> %s"%(name,entity.name)
 
 class Keyword(models.Model):
   word=models.CharField(max_length=100)
+
+  def __unicode__(self):
+    return word
 
 class Question(models.Model):
   parlid=models.CharField(max_length=16)
@@ -28,6 +40,10 @@ class Question(models.Model):
   deadline=models.DateField()
   keywords=models.ManyToManyField(Keyword)
   entities=models.ManyToManyField(Entity,null=True,blank=True)
+  url=models.CharField(max_length=200)
+
+  def __unicode__(self):
+    return name
 
 
 class Answer(models.Model):
@@ -35,6 +51,10 @@ class Answer(models.Model):
   question=models.ForeignKey(Question)
   data=models.DateField()
   text=models.TextField()
+  url=models.CharField(max_length=200)
+
+  def __unicode__(self):  
+    return question.name
 
 
 
