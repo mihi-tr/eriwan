@@ -45,6 +45,10 @@ class Question(models.Model):
   def __unicode__(self):
     return self.name
 
+class Distance(models.Model):
+  src=models.ForeignKey(Question,related_name="src")
+  dst=models.ForeignKey(Question,related_name="dst")
+  distance=models.FloatField()
 
 class Answer(models.Model):
   parlid=models.CharField(max_length=16,unique=True)
