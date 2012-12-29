@@ -17,9 +17,11 @@ class Command(NoArgsCommand):
     make_option('--verbose', action='store_true'),
     )
   def handle_noargs(self, **options):
-    # self.pages=itertools.ifilter(lambda x: not self.has_answer(x),
-    #  self.get_start_list())
-    self.process_page("/PAKT/VHG/XXIV/J/J_12779/index.shtml")
+    self.pages=itertools.ifilter(lambda x: not self.has_answer(x),
+    self.get_start_list())
+    for page in self.pages:
+      if page:
+        self.process_page(page)
 
   def get_start_list(self):
     pq=PyQuery(start)
@@ -30,7 +32,7 @@ class Command(NoArgsCommand):
 
   def has_answer(self,url):
     try:
-      question=Question.objects.get(url=url)
+      question=Question.objects.get(url="%s%s"%(base,url))
     except Question.DoesNotExist:
       return False
     try:
@@ -43,7 +45,8 @@ class Command(NoArgsCommand):
     pq=PyQuery("%s%s"%(base,url))
     return pq("body").html()
 
-  def process_page(self,url): 
+  def process_page(self,url):
+    print url
     pq=PyQuery("%s%s"%(base,url))
     parlid=url.split("/")[5]
     print parlid
@@ -53,12 +56,17 @@ class Command(NoArgsCommand):
       question=Question(parlid=parlid)
     question.url="%s%s"%(base,url)
     question.name=pq("h1#inhalt").text()
-    
+   
+    if not pq("div.reiterBlock > div.c_2 ul").text():
+      return None
     question.text=self.get_html(pq("div.reiterBlock > div.c_2 ul li:last a:last").attr("href"))
 
     question.date=make_date(pq("table.tabelle tbody tr:first td:first").text())
-    question.deadline=make_date(re.search("\(Frist: ([0-9.]+)\)", 
-      pq("table.tabelle tbody tr:first td:eq(1)").text()).group(1))
+    deadline=re.search("\(Frist: ([0-9.]+)\)", 
+      pq("table.tabelle tbody tr:first td:eq(1)").text())
+    if not deadline:
+      return None
+    question.deadline=make_date(deadline.group(1))
 
     def get_person(element):
       name=element.text
