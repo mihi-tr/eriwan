@@ -1,4 +1,5 @@
 from django.core.management.base import NoArgsCommand, make_option
+from django.db import connection, transaction
 from funda.models import *
 from pyquery import PyQuery
 import math
@@ -9,26 +10,26 @@ class Command(NoArgsCommand):
     make_option('--verbose', action='store_true'),
     )
   def handle_noargs(self, **options):
-    questions=Question.objects.all()
-    vectors=dict(zip((q.parlid for q in questions),map(self.count_words,questions)))
-    startingquestions=Question.objects.raw("""SELECT * from funda_question where id not in
-    (select distinct src_id from funda_distance);""")
-    for sq in startingquestions:
+    questions=Question.objects.all().order_by('id')
+    questions=map(self.count_words,questions)
+    cursor = connection.cursor()
+    cursor.execute("select src_id,dst_id from funda_distance")
+    done=set(cursor.fetchall())
+    
+    lq=len(questions)
+
+    def calculate_distances(sq):
+      sv=questions[sq]
+      for dq in range(sq+1,lq):
+        dv=questions[dq]
+        if (sq,dq) not in done:
+          yield(None,sq,dq,self.distance(sv,dv))
+
+    for sq in range(0,len(questions)):
       print sq
-      sv=vectors[sq.parlid]
-      for q in questions:
-        try:
-          Distance.objects.get(src=sq,dst=q)
-        except Distance.DoesNotExist:
-          """Calculate the distance"""
-          dv=vectors[sq.parlid]
-          dist=self.distance(sv,dv)
-          distance=Distance(src=sq,dst=q)
-          distance.distance=dist
-          distance.save()
-          distance=Distance(src=q,dst=sq)
-          distance.distance=dist
-          distance.save()
+      cursor.executemany("INSERT into funda_distance values (?,?,?,?)",
+        calculate_distances(sq))
+      transaction.commit_unless_managed()
 
   def count_words(self,question):
     pq=PyQuery(question.text)
