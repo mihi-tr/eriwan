@@ -1,0 +1,4 @@
+venv-eriwan
+*.pyc
+*.swp
+db/

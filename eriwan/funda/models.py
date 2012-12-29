@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Person(models.Model):
-  parlid=models.CharField(max_length=16)
+  parlid=models.CharField(max_length=16,unique=True)
   name=models.CharField(max_length=500)
   link=models.CharField(max_length=200)
 
@@ -25,13 +25,13 @@ class Alias(models.Model):
     return "%s -> %s"%(self.name,self.entity.name)
 
 class Keyword(models.Model):
-  word=models.CharField(max_length=100)
+  word=models.CharField(max_length=100,unique=True)
 
   def __unicode__(self):
     return self.word
 
 class Question(models.Model):
-  parlid=models.CharField(max_length=16)
+  parlid=models.CharField(max_length=16,unique=True)
   name=models.CharField(max_length=1024)
   asker=models.ForeignKey(Person,related_name="asking")
   asked=models.ForeignKey(Person,related_name="asked")
@@ -47,9 +47,9 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-  parlid=models.CharField(max_length=16)
+  parlid=models.CharField(max_length=16,unique=True)
   question=models.ForeignKey(Question)
-  data=models.DateField()
+  date=models.DateField()
   text=models.TextField()
   url=models.CharField(max_length=200)
 
