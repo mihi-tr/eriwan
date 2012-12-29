@@ -21,7 +21,10 @@ class Command(NoArgsCommand):
     self.get_start_list())
     for page in self.pages:
       if page:
-        self.process_page(page)
+        try:
+          self.process_page(page)
+        except:
+          print "FAILED!"
 
   def get_start_list(self):
     pq=PyQuery(start)
@@ -94,10 +97,11 @@ class Command(NoArgsCommand):
         return keyword
     keywords=[get_keyword(r.text_content()) for r in keywords]
     question.keywords=keywords
-    
-    answerurl=pq("table.tabelle tbody tr:last td:eq(1) a").attr("href")
-    if answerurl and re.search("/AB/",answerurl):
-      self.process_answer(answerurl,question)
+   
+    for aurl in pq("table.tabelle tbody tr td:eq(1) a"):
+      answerurl=aurl.get("href")
+      if re.search("/AB/",answerurl):
+        self.process_answer(answerurl,question)
 
   def process_answer(self,url,question):
     pq=PyQuery("%s%s"%(base,url))

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h2>{{question.name}}</h2>
+
+<p>
+Parlamentarische Anfrage von <a
+href="/person/{{question.asker.parlid}}">{{question.asker.name}}</a> an
+<a href="/asked/{{question.asked.parlid}}">{{question.asked.name}}</a>
+vom {{question.date|date:"d.m.Y"}}.
+</p>
+<div class="well keywords">
+<ul>
+<li>Schlüsselworte:
+{% for kw in question.keywords.all %}
+<a href="/keyword/{{kw.id}}">{{kw.word}}</a> </li>
+<li><a href="{{question.url}}" target="_new">Anfrage auf
+parlament.gv.at</a></li>
+{% if answer %}
+<li><a href="{{answer.url}}" target="_new">Antwort auf
+parlament.gv.at</a></li>
+{% endif %}
+{% endfor %}
+</ul>
+</div>
+<div class="row-fluid">
+<div class="span6">
+<h2>Anfrage</h2>
+{{question.text|removetags:"span a img"|safe}}
+</div>
+<div class="span6">
+{% if answer %}
+<h2>Antwort</h2>
+{{answer.text|removetags:"span a img"|safe}}
+{% else %}
+Noch keine Antwort vorhanden. Frist zur Beantwortung:
+{{question.deadline|date:"d.m.Y"}}
+{% endif %}
+</div>
+</div>
+{% endblock %}

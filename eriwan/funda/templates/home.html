@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="row-fluid">
+<div class="span8">
+<p>Eriwan sammelt bla bla bla</p>
+<a href="/questions" class="btn btn-primary">Fragen</a> 
+<a href="/persons" class="btn btn-primary">Personen</a> 
+<div class="row-fluid">
+<div class="span6">
+<h2>Letzte Fragen</h2>
+<ul>
+{% for question in questions %}
+<li><a href="/question/{{question.parlid}}">{{question.name}}</a></li>
+{% endfor %}
+</ul>
+</div>
+<div class="span6">
+<h2>Letzte Antworten</h2>
+<ul>
+{% for answer in answers %}
+<li><a href="/question/{{answer.question.parlid}}">{{answer.question.name}}</a></li>
+{% endfor %}
+</ul>
+</div>
+</div>
+</div>
+<div class="span4">
+<div class="well">
+<h2>Keywords</h2>
+{% for kw in keywords %}
+<a href="/keyword/{{kw.id}}">{{kw.word}}</a> 
+{% endfor %}
+</div>
+</div>
+</div>
+{% endblock %}

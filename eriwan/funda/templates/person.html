@@ -1,0 +1,8 @@
+{% extends "listview.html" %}
+{% block description %}
+<h2>Parlamentarische Anfragen von {{person.name}}</h2>
+<div class="well">
+<a href="{{person.link}}" target="_new">Personeninformation zu {{person.name}} auf
+parlament.gv.at</a>
+</div>
+{% endblock %}

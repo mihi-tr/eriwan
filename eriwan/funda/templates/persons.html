@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block main %}
+<h2>Anfragestellerinnen</h2>
+<table class="table table-striped">
+<tbody>
+  {% for person in persons %}
+  <tr>
+    <td><a href="/person/{{person.parlid}}">{{person.name}}</a></td>
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
+{% endblock %}
