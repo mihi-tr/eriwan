@@ -8,27 +8,27 @@ class Person(models.Model):
   link=models.CharField(max_length=200)
 
   def __unicode__(self):
-    return name
+    return self.name
 
 class Entity(models.Model):
   type=models.CharField(max_length=50)
   name=models.CharField(max_length=100)
 
   def __unicode__(self):
-    return name
+    return self.name
 
 class Alias(models.Model):
   entity=models.ForeignKey(Entity)
   name=models.CharField(max_length=100)
   
   def __unicode__(self):
-    return "%s -> %s"%(name,entity.name)
+    return "%s -> %s"%(self.name,self.entity.name)
 
 class Keyword(models.Model):
   word=models.CharField(max_length=100)
 
   def __unicode__(self):
-    return word
+    return self.word
 
 class Question(models.Model):
   parlid=models.CharField(max_length=16)
@@ -43,7 +43,7 @@ class Question(models.Model):
   url=models.CharField(max_length=200)
 
   def __unicode__(self):
-    return name
+    return self.name
 
 
 class Answer(models.Model):
@@ -54,7 +54,7 @@ class Answer(models.Model):
   url=models.CharField(max_length=200)
 
   def __unicode__(self):  
-    return question.name
+    return self.question.name
 
 
 
