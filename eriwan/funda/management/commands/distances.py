@@ -11,7 +11,9 @@ class Command(NoArgsCommand):
     )
   def handle_noargs(self, **options):
     questions=Question.objects.all().order_by('id')
-    questions=map(self.count_words,questions)
+    print "questions loaded"
+    questions=map(self.count_words,(i for i in questions))
+    print "quesitons transformed"
     cursor = connection.cursor()
     cursor.execute("select src_id,dst_id from funda_distance")
     done=set(cursor.fetchall())
@@ -23,11 +25,12 @@ class Command(NoArgsCommand):
       for dq in range(sq+1,lq):
         dv=questions[dq-1]
         if (sq,dq) not in done:
-          yield(None,sq,dq,self.distance(sv,dv))
+          yield({"src_id":sq,"dst_id":dq,"distance":self.distance(sv,dv)})
 
     for sq in range(1,lq):
       print sq
-      cursor.executemany("INSERT into funda_distance values (?,?,?,?)",
+      cursor.executemany("""INSERT into funda_distance (src_id, dst_id,
+      distance) values (%(src_id)s, %(dst_id)s, %(distance)s);""",
         calculate_distances(sq))
       transaction.commit_unless_managed()
 
