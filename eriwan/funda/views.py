@@ -40,8 +40,18 @@ def asked(request,parlid):
   questions=create_pagination(request,Question.objects.filter(asked=person))
   return render_to_response("asked.html",locals())
 
+def get_similar(question):
+  distances=Distance.objects.raw("""select * from funda_distance where
+  src_id=%s or dst_id=%s order by distance limit 10;"""%(question.id,question.id))
+  for d in distances:
+    if question==d.src:
+      yield d.dst
+    else:
+      yield d.src
+
 def question(request,parlid):
   question=get_object_or_404(Question,parlid=parlid)
+  similar=get_similar(question)
   try:
     answer=Answer.objects.get(question=question)
   except Answer.DoesNotExist:

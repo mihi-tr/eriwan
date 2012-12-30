@@ -4,11 +4,11 @@
 <div class="row-fluid">
 <div class="span8">
 <p>Eriwan sammelt bla bla bla</p>
-<a href="/questions" class="btn btn-primary">Fragen</a> 
-<a href="/persons" class="btn btn-primary">Personen</a> 
+<a href="/questions" class="btn btn-large btn-primary">Fragen</a> 
+<a href="/persons" class="btn btn-large btn-primary">Personen</a> 
 <div class="row-fluid">
 <div class="span6">
-<h2>Letzte Fragen</h2>
+<h2>Neue Fragen</h2>
 <ul>
 {% for question in questions %}
 <li><a href="/question/{{question.parlid}}">{{question.name}}</a></li>
@@ -16,7 +16,7 @@
 </ul>
 </div>
 <div class="span6">
-<h2>Letzte Antworten</h2>
+<h2>Neue Antworten</h2>
 <ul>
 {% for answer in answers %}
 <li><a href="/question/{{answer.question.parlid}}">{{answer.question.name}}</a></li>

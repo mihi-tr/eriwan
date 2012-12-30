@@ -16,16 +16,16 @@ class Command(NoArgsCommand):
     cursor.execute("select src_id,dst_id from funda_distance")
     done=set(cursor.fetchall())
     
-    lq=len(questions)
+    lq=len(questions)+1
 
     def calculate_distances(sq):
-      sv=questions[sq]
+      sv=questions[sq-1]
       for dq in range(sq+1,lq):
-        dv=questions[dq]
+        dv=questions[dq-1]
         if (sq,dq) not in done:
           yield(None,sq,dq,self.distance(sv,dv))
 
-    for sq in range(0,len(questions)):
+    for sq in range(1,lq):
       print sq
       cursor.executemany("INSERT into funda_distance values (?,?,?,?)",
         calculate_distances(sq))

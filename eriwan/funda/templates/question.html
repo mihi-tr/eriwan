@@ -38,4 +38,13 @@ Noch keine Antwort vorhanden. Frist zur Beantwortung:
 {% endif %}
 </div>
 </div>
+{% if similar %}
+<h2>Ähnliche Anfragen</h2>
+<ul>
+{% for s in similar %}
+<li><a href="/question/{{s.parlid}}">{{s.name}}</li>
+{% endfor %}
+
+</ul>
+{% endif %}
 {% endblock %}
