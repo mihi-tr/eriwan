@@ -71,7 +71,8 @@ class Command(NoArgsCommand):
       cursor.execute("""drop table doccount;""")
     except:
       pass
-    cursor.execute("""SELECT term,log(%s/count(distinct(question_id))) into
+    cursor.execute("""SELECT term,log(%s/count(distinct(question_id))) as
+    idf into
     doccount from funda_termcount group by term;"""%total_docs)
     print "idf"
     for q in ids:
