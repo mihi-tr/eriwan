@@ -51,11 +51,12 @@ def get_similar(question):
 
 def question(request,parlid):
   question=get_object_or_404(Question,parlid=parlid)
-  similar=get_similar(question)
+  #similar=get_similar(question)
   try:
     answer=Answer.objects.get(question=question)
   except Answer.DoesNotExist:
     answer=None
+  terms=NotableTerms(question=question)  
   return render_to_response("question.html",locals())
 
 def persons(request):

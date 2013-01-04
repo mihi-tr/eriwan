@@ -21,6 +21,12 @@ parlament.gv.at</a></li>
 parlament.gv.at</a></li>
 {% endif %}
 {% endfor %}
+{% if terms %}
+<li>Begriffe: 
+{% for t in terms %}
+t.term 
+{% endfor %}
+{% endif %}
 </ul>
 </div>
 <div class="row-fluid">
