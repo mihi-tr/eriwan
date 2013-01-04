@@ -37,7 +37,7 @@ class Command(NoArgsCommand):
 
   def get_term_counts(self):
     questions=Question.objects.raw("""Select * from funda_question where id
-    not in (select question_id from funda_termcount)""");
+    not in (select distinct(question_id) from funda_termcount)""");
     tcache=TermCache()
     cursor=connection.cursor()
     
@@ -58,7 +58,7 @@ class Command(NoArgsCommand):
   def tfidf(self):
     cursor=connection.cursor()
     cursor.execute("""Select id from funda_question where id not in (select
-    question_id from funda_notableterms);""")
+    distinct(question_id) from funda_notableterms);""")
     ids=(i[0] for i in cursor.fetchall())
     
     cursor.execute("""Select count(distinct(question_id)) from
