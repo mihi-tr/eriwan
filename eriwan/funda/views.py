@@ -60,7 +60,7 @@ def question(request,parlid):
   return render_to_response("question.html",locals())
 
 def term(request,term):
-  terms=NotableTerms(term=term)
+  terms=NotableTerms.objects.filter(term=term)
   questions=[t.question for t in terms]
   return render_to_response("term.html",locals())
 
