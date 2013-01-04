@@ -69,3 +69,7 @@ class TermCount(models.Model):
   term=models.ForeignKey(Term)
   question=models.ForeignKey(Question)
 
+class NotableTerms(models.Model):
+  term=models.ForeignKey(Term)
+  question=models.ForeignKey(Question)
+
