@@ -1,6 +1,5 @@
 from django.core.management.base import NoArgsCommand, make_option
 from funda.models import *
-from pyquery import PyQuery
 import nltk
 import itertools
 import math
@@ -45,8 +44,7 @@ class Command(NoArgsCommand):
 
     for q in questions: 
       print q.id
-      pq=PyQuery(q.text)
-      words=nltk.word_tokenize(pq.text())
+      words=nltk.word_tokenize(nltk.clean_html(q.text))
       fd=nltk.FreqDist(words)
       for i in fd.items():  
         term=tcache.get(i[0])
