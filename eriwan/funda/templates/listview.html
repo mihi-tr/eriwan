@@ -20,6 +20,7 @@
 {% endfor %}
 </tbody>
 </table>
+{% if question.number %}
 <div class="pages well">
 {% if questions.has_previous %}
             <a href="?page={{ questions.previous_page_number }}">&lt;&lt;</a>
@@ -33,5 +34,5 @@
             <a href="?page={{ questions.next_page_number }}">&gt;&gt;</a>
         {% endif %}
 </div>
-
+{% endif %}
 {% endblock %}

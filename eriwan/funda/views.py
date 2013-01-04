@@ -59,6 +59,11 @@ def question(request,parlid):
   terms=NotableTerms.objects.filter(question=question)  
   return render_to_response("question.html",locals())
 
+def term(request,term):
+  terms=NotableTerms(term=term)
+  questions=[t.question for t in terms]
+  return render_to_response("term.html",locals())
+
 def persons(request):
   persons=Person.objects.raw("""SELECT * from funda_person where id in
     (select distinct asker_id from funda_question) order by name;""")

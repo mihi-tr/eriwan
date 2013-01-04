@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     url(r'^person/(?P<parlid>\w+)','funda.views.person',name='person'),
     url(r'^asked/(?P<parlid>\w+)','funda.views.asked',name='person'),
     url(r'^question/(?P<parlid>\w+)','funda.views.question',name='question'),
+    url(r'^term/(?P<id>\d+)','funda.views.term',name='term'),
     # url(r'^eriwan/', include('eriwan.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
