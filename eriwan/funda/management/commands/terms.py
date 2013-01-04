@@ -8,17 +8,19 @@ from django.db import connection, transaction
 
 
 class TermCache:
+  max_terms=500
   def __init__(self):
     self.terms={}
   
   def get_term(self,term):
     try:
-      self.terms[term]=Term.objects.get(term=term)
-      return self.terms[term]
+      t=Term.objects.get(term=term)
     except Term.DoesNotExist:
-      self.terms[term]=Term(term=term)
-      self.terms[term].save()
-      return self.terms[term]
+      t=Term(term=term)
+      t.save()
+    if len(self.terms)<self.max_terms:
+      self.terms[term]=t
+    return t
 
   def get(self,term):
     return self.terms.get(term,self.get_term(term))
