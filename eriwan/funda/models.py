@@ -64,10 +64,10 @@ class Answer(models.Model):
 
 class TermCount(models.Model):
   count=models.IntegerField()
-  term=models.CharField(max_length=100)
+  term=models.CharField(max_length=500)
   question=models.ForeignKey(Question)
 
 class NotableTerms(models.Model):
-  term=models.CharField(max_length=100)
+  term=models.CharField(max_length=500)
   question=models.ForeignKey(Question)
 
