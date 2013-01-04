@@ -54,7 +54,7 @@ class Command(NoArgsCommand):
         tc.save()
       n+=1
       if not (n%50):
-        qc.collect()
+        gc.collect()
 
   def tfidf(self):
     questions=Question.objects.raw("""Select * from funda_question where id
