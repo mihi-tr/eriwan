@@ -45,7 +45,7 @@ class Command(NoArgsCommand):
     n=0
     for q in questions: 
       print q.id
-      text=re.sub("[%']","",nltk.clean_html(q.text))
+      text=re.sub("[%'/0-9]","",nltk.clean_html(q.text))
       words=nltk.word_tokenize(text)
       fd=nltk.FreqDist(words)
       cursor.executemany("""Insert into funda_termcount (question_id,term,count) values (?,?,?)""",
