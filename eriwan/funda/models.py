@@ -61,15 +61,13 @@ class Answer(models.Model):
     return self.question.name
 
 
-class Term(models.Model):
-  term=models.CharField(max_length=500,unique=True)
 
 class TermCount(models.Model):
   count=models.IntegerField()
-  term=models.ForeignKey(Term)
+  term=models.CharField(max_length=100)
   question=models.ForeignKey(Question)
 
 class NotableTerms(models.Model):
-  term=models.ForeignKey(Term)
+  term=models.CharField(max_length=100)
   question=models.ForeignKey(Question)
 

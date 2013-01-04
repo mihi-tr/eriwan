@@ -39,6 +39,7 @@ class Command(NoArgsCommand):
     questions=Question.objects.raw("""Select * from funda_question where id
     not in (select question_id from funda_termcount)""");
     tcache=TermCache()
+    cursor=connection.cursor()
     
     n=0
 
@@ -46,12 +47,10 @@ class Command(NoArgsCommand):
       print q.id
       words=nltk.word_tokenize(nltk.clean_html(q.text))
       fd=nltk.FreqDist(words)
-      for i in fd.items():  
-        term=tcache.get(i[0])
-        tc=TermCount(count=i[1])
-        tc.term=term
-        tc.question=q
-        tc.save()
+      cursor.executemany("""Insert into funda_termcount (question_id,term,count) values (?,?,?)""",
+      ((q.id,t,c) for (t,c) in fd.items())  )
+      transaction.commit_unless_managed()
+
       n+=1
       if not (n%50):
         gc.collect()
@@ -68,7 +67,7 @@ class Command(NoArgsCommand):
     def calculate(tc):
       tf=1+math.log(tc.count)
       cursor.execute("""Select count(distinct(question_id)) from funda_termcount where
-      term_id=%s"""%tc.term.id)
+      term='%s'"""%tc.term)
       tdc=cursor.fetchone()[0]
       idf=math.log(total_docs/tdc)
       return (tc.term,tf*idf)
@@ -76,6 +75,6 @@ class Command(NoArgsCommand):
     for q in questions:
       tcs=TermCount.objects.filter(question=q)
       tcs=sorted([calculate(t) for t in tcs],key=lambda x: x[1])[-5:]
-      for t in tcs:
-        nt=NotableTerms(term=t[0],question=q)
-        nt.save()
+      cursor.executemany("""Insert into funda_notableterms
+      (term,question_id) values (?,?)""",((t[0],q.id) for t in tcs))
+      transaction.commit_unless_managed()
