@@ -36,6 +36,7 @@ class Command(NoArgsCommand):
     self.tfidf()
 
   def get_term_counts(self):
+    print "term counts"
     questions=Question.objects.raw("""Select * from funda_question where id
     not in (select distinct(question_id) from funda_termcount)""");
     tcache=TermCache()
@@ -56,10 +57,12 @@ class Command(NoArgsCommand):
         gc.collect()
 
   def tfidf(self):
+    print "tfidf"
     cursor=connection.cursor()
     cursor.execute("""Select id from funda_question where id not in (select
     distinct(question_id) from funda_notableterms);""")
     ids=(i[0] for i in cursor.fetchall())
+    print "ids"
     
     cursor.execute("""Select count(distinct(question_id)) from
     funda_termcount;""")
@@ -70,7 +73,7 @@ class Command(NoArgsCommand):
       pass
     cursor.execute("""SELECT term,log(%s/count(distinct(question_id))) into
     doccount from funda_termcount group by term;"""%total_docs)
-
+    print "idf"
     for q in ids:
       cursor.execute("""SELECT funda_termcount.term,(1+log(count)) * idf as
       tfidf from funda_termcount inner join doccount on
