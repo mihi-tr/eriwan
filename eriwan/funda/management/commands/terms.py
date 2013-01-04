@@ -5,6 +5,7 @@ import nltk
 import itertools
 import math
 from django.db import connection, transaction
+import gc
 
 
 class TermCache:
@@ -39,6 +40,8 @@ class Command(NoArgsCommand):
     questions=Question.objects.raw("""Select * from funda_question where id
     not in (select question_id from funda_termcount)""");
     tcache=TermCache()
+    
+    n=0
 
     for q in questions: 
       print q.id
@@ -46,11 +49,14 @@ class Command(NoArgsCommand):
       words=nltk.word_tokenize(pq.text())
       fd=nltk.FreqDist(words)
       for i in fd.items():  
-       term=tcache.get(i[0])
-       tc=TermCount(count=i[1])
-       tc.term=term
-       tc.question=q
-       tc.save()
+        term=tcache.get(i[0])
+        tc=TermCount(count=i[1])
+        tc.term=term
+        tc.question=q
+        tc.save()
+      n+=1
+      if not (n%50):
+        qc.collect()
 
   def tfidf(self):
     questions=Question.objects.raw("""Select * from funda_question where id
