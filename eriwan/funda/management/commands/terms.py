@@ -56,9 +56,10 @@ class Command(NoArgsCommand):
         gc.collect()
 
   def tfidf(self):
-    questions=Question.objects.raw("""Select * from funda_question where id
-    not in (select question_id from funda_notableterms)""")
     cursor=connection.cursor()
+    cursor.execute("""Select id from funda_question where id not in (select
+    question_id from funda_notableterms);""")
+    ids=(i[0] for i in cursor.fetchall())
     
     cursor.execute("""Select count(distinct(question_id)) from
     funda_termcount;""")
@@ -70,11 +71,11 @@ class Command(NoArgsCommand):
     cursor.execute("""SELECT term,log(%s/count(distinct(question_id))) into
     doccount from funda_termcount group by term;"""%total_docs)
 
-    for q in questions:
+    for q in ids:
       cursor.execute("""SELECT funda_termcount.term,(1+log(count)) * idf as
       tfidf from funda_termcount inner join doccount on
-      doccount.term=funda_termcount.term where question_id=%s;"""%q.id)
+      doccount.term=funda_termcount.term where question_id=%s;"""%q)
       tcs=sorted([i for i in cursor.fetchall()],key=lambda x: x[1])[-5:]
       cursor.executemany("""Insert into funda_notableterms
-      (term,question_id) values (?,?)""",((t[0],q.id) for t in tcs))
+      (term,question_id) values (?,?)""",((t[0],q) for t in tcs))
       transaction.commit_unless_managed()
