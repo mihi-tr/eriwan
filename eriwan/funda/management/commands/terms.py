@@ -2,7 +2,7 @@ from django.core.management.base import NoArgsCommand, make_option
 from funda.models import *
 import nltk
 import itertools
-import math
+import math,re
 from django.db import connection, transaction
 import gc
 
@@ -42,10 +42,10 @@ class Command(NoArgsCommand):
     cursor=connection.cursor()
     
     n=0
-
     for q in questions: 
       print q.id
-      words=nltk.word_tokenize(nltk.clean_html(q.text))
+      text=re.sub("[%']","",nltk.clean_html(q.text))
+      words=nltk.word_tokenize(text)
       fd=nltk.FreqDist(words)
       cursor.executemany("""Insert into funda_termcount (question_id,term,count) values (?,?,?)""",
       ((q.id,t,c) for (t,c) in fd.items())  )
@@ -63,18 +63,18 @@ class Command(NoArgsCommand):
     cursor.execute("""Select count(distinct(question_id)) from
     funda_termcount;""")
     total_docs=cursor.fetchone()[0]
+    try:
+      cursor.execute("""drop table doccount;""")
+    except:
+      pass
+    cursor.execute("""SELECT term,log(%s/count(distinct(question_id))) into
+    doccount from funda_termcount group by term;"""%total_docs)
 
-    def calculate(tc):
-      tf=1+math.log(tc.count)
-      cursor.execute("""Select count(distinct(question_id)) from funda_termcount where
-      term='%s'"""%tc.term)
-      tdc=cursor.fetchone()[0]
-      idf=math.log(total_docs/tdc)
-      return (tc.term,tf*idf)
-      
     for q in questions:
-      tcs=TermCount.objects.filter(question=q)
-      tcs=sorted([calculate(t) for t in tcs],key=lambda x: x[1])[-5:]
+      cursor.execute("""SELECT funda_termcount.term,(1+log(count)) * idf as
+      tfidf from funda_termcount inner join doccount on
+      doccount.term=funda_termcount.term where question_id=%s;"""%q.id)
+      tcs=sorted([i for i in cursor.fetchall()],key=lambda x: x[1])[-5:]
       cursor.executemany("""Insert into funda_notableterms
       (term,question_id) values (?,?)""",((t[0],q.id) for t in tcs))
       transaction.commit_unless_managed()
