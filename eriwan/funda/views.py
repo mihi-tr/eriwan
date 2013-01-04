@@ -56,7 +56,7 @@ def question(request,parlid):
     answer=Answer.objects.get(question=question)
   except Answer.DoesNotExist:
     answer=None
-  terms=NotableTerms(question=question)  
+  terms=NotableTerms.objects.filter(question=question)  
   return render_to_response("question.html",locals())
 
 def persons(request):
