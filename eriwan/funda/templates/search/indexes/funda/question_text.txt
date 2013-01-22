@@ -1,0 +1,7 @@
+
+{{object.name}}
+{% for kw in object.keywords.all %}
+{{kw.word}}
+{% endfor %}
+{{object.asker.name}}
+{{object.text}}

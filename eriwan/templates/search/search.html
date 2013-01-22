@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <h2>Suche</h2>
+
+    <form method="get" action=".">
+      <div class="input-append">
+        <input type="text" name="q" class="span2" value="{{query}}">
+        <input type="submit" class="btn" value="Suche" type="button">
+      </div>
+        {% if query %}
+            <h3>Ergebnisse</h3>
+
+            {% for result in page.object_list %}
+                <p>
+                    <a href="/question/{{ result.object.parlid }}">
+ {{ result.object.name }}</a>
+                </p>
+            {% empty %}
+                <p>Keine Ergebnisse gefunden</p>
+            {% endfor %}
+          {% if page.number %}
+<div class="pages well">
+{% if page.has_previous %}
+            <a href="?q={{ query }}&page={{ page.previous_page_number }}">&lt;&lt;</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page.number }} von {{ page.paginator.num_pages }}.
+        </span>
+
+        {% if page.has_next %}
+            <a href="?q={{ query }}&page={{ page.next_page_number }}">&gt;&gt;</a>
+        {% endif %}
+</div>
+{% endif %}
+
+        {% else %}
+        {% endif %}
+    </form>
+{% endblock %}
