@@ -8,19 +8,28 @@
         <input type="text" name="q" class="span2" value="{{query}}">
         <input type="submit" class="btn" value="Suche" type="button">
       </div>
+     </form> 
         {% if query %}
             <h3>Ergebnisse</h3>
-
+            <table class="table table-striped">
+            <tbody>
             {% for result in page.object_list %}
-                <p>
+              <tr><td>{{result.object.date|date:"d.m.Y"}}</td>
+                  <td>
                     <a href="/question/{{ result.object.parlid }}">
- {{ result.object.name }}</a>
-                </p>
+ {{ result.object.name }}</a></td>
+                  <td><a href="/person/{{ result.object.asker.parlid }}">
+                    {{ result.object.asker.name }}</a></td>
+
+               </tr>     
             {% empty %}
-                <p>Keine Ergebnisse gefunden</p>
+                <tr><td>Keine Ergebnisse gefunden</td></tr>
             {% endfor %}
+            </tbody>
+            </table>
+
           {% if page.number %}
-<div class="pages well">
+<div class="well">
 {% if page.has_previous %}
             <a href="?q={{ query }}&page={{ page.previous_page_number }}">&lt;&lt;</a>
         {% endif %}
@@ -37,5 +46,4 @@
 
         {% else %}
         {% endif %}
-    </form>
 {% endblock %}
