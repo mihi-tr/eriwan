@@ -30,11 +30,11 @@ def get_activity(list):
     sq=int(datetime.datetime.now().strftime("%U"))
     for y in range(2008,2014):
       for w in range(1,53):
-        if not (y>=sy) & (w>sq):
-          yield( ((y-yoffset)*w-woffset,0))
+        if not (y==sy) & (w>sq):
+          yield(((y-yoffset)*53+w-woffset,0))
 
   def s(x,y):
-    z=((y.date.year-yoffset)*int(y.date.strftime("%2U")))-woffset
+    z=((y.date.year-yoffset)*53+int(y.date.strftime("%2U")))-woffset
     x[z]=x.get(z,0)+1
     return x
   activity=reduce(s,list,dict(yl()))
