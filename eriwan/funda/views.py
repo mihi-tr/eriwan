@@ -35,7 +35,6 @@ def get_activity(list):
   return json.dumps(map(lambda x: activity[x], sorted(activity.keys())))
 
 def questions(request):
-  activity=get_activity(Question.objects.all())
   questions=create_pagination(request,Question.objects.all())
   return render_to_response("questions.html",locals())
 
@@ -48,11 +47,13 @@ def keyword(request,id):
 def person(request,parlid):
   person=get_object_or_404(Person,parlid=parlid)
   questions=create_pagination(request,Question.objects.filter(asker=person))
+  activity=get_activity(Question.objects.filter(asker=person))
   return render_to_response("person.html",locals())
 
 def asked(request,parlid):
   person=get_object_or_404(Person,parlid=parlid)
   questions=create_pagination(request,Question.objects.filter(asked=person))
+  activity=get_activity(Question.objects.filter(asked=person))
   return render_to_response("asked.html",locals())
 
 def get_similar(question):
