@@ -2,7 +2,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from funda.models import *
-import json
+import json,datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def home(request):
@@ -23,16 +23,24 @@ def create_pagination(request,list):
   return questions
 
 def get_activity(list):
+  woffset=39 # THIS IS UGLY -  HARDCODED ELECTION YEAR
+  yoffset=2008
   def yl():
-    for y in range(2008,2013):
+    sy=datetime.datetime.now().year
+    sq=int(datetime.datetime.now().strftime("%U"))
+    for y in range(2008,2014):
       for w in range(1,53):
-        yield ("%s-%2d"%(y,w),0)
+        if not (y>=sy) & (w>sq):
+          yield( ((y-yoffset)*w-woffset,0))
+
   def s(x,y):
-    z=y.date.strftime("%Y-%2U")
+    z=((y.date.year-yoffset)*int(y.date.strftime("%2U")))-woffset
     x[z]=x.get(z,0)+1
     return x
   activity=reduce(s,list,dict(yl()))
-  return json.dumps(map(lambda x: activity[x], sorted(activity.keys())))
+  x=sorted(activity.keys())
+  return json.dumps(map(lambda x: activity[x],
+  sorted(activity.keys())))
 
 def questions(request):
   questions=create_pagination(request,Question.objects.all())
