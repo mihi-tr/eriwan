@@ -2,6 +2,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from funda.models import *
+import json
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def home(request):
@@ -21,13 +22,27 @@ def create_pagination(request,list):
     questions=paginator.page(paginator.num_pages)
   return questions
 
+def get_activity(list):
+  def yl():
+    for y in range(2008,2013):
+      for w in range(1,53):
+        yield ("%s-%2d"%(y,w),0)
+  def s(x,y):
+    z=y.date.strftime("%Y-%2U")
+    x[z]=x.get(z,0)+1
+    return x
+  activity=reduce(s,list,dict(yl()))
+  return json.dumps(map(lambda x: activity[x], sorted(activity.keys())))
+
 def questions(request):
+  activity=get_activity(Question.objects.all())
   questions=create_pagination(request,Question.objects.all())
   return render_to_response("questions.html",locals())
 
 def keyword(request,id):
   keyword=get_object_or_404(Keyword,id=id)
   questions=create_pagination(request,Question.objects.filter(keywords=keyword))
+  activity=get_activity(Question.objects.filter(keywords=keyword))
   return render_to_response("keywords.html",locals())
 
 def person(request,parlid):

@@ -5,6 +5,14 @@
 {% block description %}
 {% endblock %}
 </div>
+{% if activity %}
+<div id='activity'></div>
+<script>
+var activity={{activity}};
+$("#activity").sparkline(activity, {type: 'line', width:
+'100%'});
+</script>
+{% endif %}
 <table class="table table-striped">
 <tbody>
 {% for question in questions %}

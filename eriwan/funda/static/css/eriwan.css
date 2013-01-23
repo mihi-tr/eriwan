@@ -7,3 +7,6 @@ ul {
 .brand a {
   color: #AAAAAA;
   }
+#activity canvas {
+  width: 100%;
+  };
